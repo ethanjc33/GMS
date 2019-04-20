@@ -1,0 +1,113 @@
+﻿@model GMS.Models.History
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //Fix redirect
+    if ((bool)Session["adminAccess"] != true) { Response.Redirect("~/Home/gmsHome"); }
+    string message = "";
+    if (Session["host"] != null) { message = Session["host"].ToString(); }
+}
+
+<style>
+    input[type=submit] {
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    input[type=submit]:hover {
+        background-color: #45a049;
+    }
+</style>
+
+<!DOCTYPE HTML>
+
+<title>GMS - ADMIN</title>
+
+
+<!-- Admin Page Content -->
+<div class="w3-container" id="menu">
+    <div class="w3-content w3-center w3-padding-64" style="max-width:700px">
+        <div class="w3-content w3-center w3-padding-48" style="max-width:700px">
+            <h3>ADMIN TOOLS</h3>
+
+            <!-- Accordion Dropdown List of Admin Tools -->
+
+            <!-- Dropdown One: Display table associated with searched for host, Excel export function -->
+            <button onclick="myAccFunc('tab1')" class="w3-padding-16 w3-theme w3-button w3-block w3-left-align w3-dark-grey">Request Resident Profile History</button>
+            <div id="tab1" class="w3-hide">
+                <div class="w3-container">
+                    <h5>Enter a Resident's ID number and we'll display their transaction history</h5>
+                    @using (Html.BeginForm("ResidentTransactionHistory", "Home", FormMethod.Post)) {
+                        @Html.EditorFor(x => x.Resident.studentID, new { htmlAttributes = new { @class = "forms", placeholder = "Zip ID #" } })
+                        <h5>Or alternatively, enter Resident's first and last name below:</h5>
+                        @Html.EditorFor(x => x.Resident.firstName, new { htmlAttributes = new { @class = "forms", placeholder = "First Name", Value = "" } })
+                        @Html.EditorFor(x => x.Resident.lastName, new { htmlAttributes = new { @class = "forms", placeholder = "Last Name", Value = "" } })
+                        <input type="submit" value="Generate Excel File"/>
+                    }
+                </div>
+            </div>
+
+            <br />
+            <!-- Dropdown Two: Display table associated with a guest's profile / all history transactions, Excel export functionality -->
+            <button onclick="myAccFunc('tab2')" class="w3-padding-16 w3-theme w3-button w3-block w3-left-align w3-dark-grey">Request Guest Profile History</button>
+            <div id="tab2" class="w3-hide">
+                <h5>Enter a Guest's ID number and we'll display their transaction history</h5>
+                @using (Html.BeginForm("GuestTransactionHistory", "Home", FormMethod.Post)) {
+                        @Html.EditorFor(x => x.guestID, new { htmlAttributes = new { @class = "forms", placeholder = "Guest ID #" } })
+                        <h5>Or alternatively, enter Guest's first and last name below:</h5>
+                        @Html.EditorFor(x => x.Guest.firstName, new { htmlAttributes = new { @class = "forms", placeholder = "First Name", Value = "" } })
+                        @Html.EditorFor(x => x.Guest.lastName, new { htmlAttributes = new { @class = "forms", placeholder = "Last Name", Value = "" } })
+                        <input type="submit" value="Generate Excel File" />
+                }
+            </div>
+
+            <br />
+            <!-- Dropdown Three: Ability to mark a guest as prohibited from entry -->
+            <button onclick="myAccFunc('tab3')" class="w3-padding-16 w3-theme w3-button w3-block w3-left-align w3-dark-grey">New Prohibited Guest</button>
+            <div id="tab3" class="w3-hide">
+                <h5>First enter a Guest's ID number</h5>
+                @using (Html.BeginForm("adminGrabGuest", "Home", FormMethod.Post)) {
+                    @Html.EditorFor(x => x.Guest.guestID, new { htmlAttributes = new { @class = "forms", placeholder = "Guest ID #" } })
+                    <p>@Html.ValidationMessageFor(x => x.Guest.guestID)</p>
+                    <input type="submit" value="Confirm Guest"/>
+                }
+
+                <!-- Display success message upon prohibited function's return -->
+                <br /><div style="color:limegreen"><p>@message</p></div>
+
+                @if (Model != null && Session["guestIsFound"] != null) {
+                    if (Session["guestIsFound"].ToString() == "prohibitedCheck") {
+                        <br /><h5>Do you really want to mark @Model.Guest.firstName @Model.Guest.lastName as prohibited?</h5>
+                        using (Html.BeginForm("markProhibited", "Home", FormMethod.Post)) {
+                            <h5>@Html.CheckBoxFor(x => x.Guest.prohibited)</h5>
+                            @Html.HiddenFor(x => x.Guest.guestID)
+                            @Html.HiddenFor(x => x.guestID)
+                            <input type="submit" value="Mark as Prohibited"/>
+                        }
+                    }
+                }
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    //Accordian functionality source: w3 schools css templates
+    function myAccFunc(id) {
+        var x = document.getElementById(id);
+        if (x.className.indexOf("w3-show") == -1) {
+            x.className += " w3-show";
+        } else {
+            x.className = x.className.replace(" w3-show", "");
+        }
+    }
+</script>

@@ -1,0 +1,346 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="masterModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Guests">
+          <Key>
+            <PropertyRef Name="guestID" />
+          </Key>
+          <Property Name="guestID" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="prohibited" Type="bit" Nullable="false" />
+          <Property Name="prohibitedDate" Type="datetime" />
+          <Property Name="notes" Type="varchar" MaxLength="300" />
+          <Property Name="identityType" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="isStudent" Type="bit" Nullable="false" />
+          <Property Name="firstName" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="lastName" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="gender" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="History">
+          <Key>
+            <PropertyRef Name="transactionID" />
+          </Key>
+          <Property Name="transactionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="guestID" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="hostID" Type="int" Nullable="false" />
+          <Property Name="building" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="bedspace" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="updatedBy" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="overnight" Type="bit" Nullable="false" />
+          <Property Name="inTime" Type="datetime" Nullable="false" />
+          <Property Name="outTime" Type="datetime" />
+          <Property Name="expired" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Residents">
+          <Key>
+            <PropertyRef Name="studentID" />
+          </Key>
+          <Property Name="studentID" Type="int" Nullable="false" />
+          <Property Name="firstName" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="lastName" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="building" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="room" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="moveInDate" Type="datetime" Nullable="false" />
+          <Property Name="moveOutDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="userID" />
+          </Key>
+          <Property Name="userID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="associatedBuilding" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="username" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="pword" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="isAdmin" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ZipCard">
+          <Key>
+            <PropertyRef Name="zipID" />
+          </Key>
+          <Property Name="zipID" Type="int" Nullable="false" />
+          <Property Name="uaNetID" Type="varchar" MaxLength="7" />
+          <Property Name="firstName" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="lastName" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="gender" Type="bit" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__History__guestID__1940BAED">
+          <End Role="Guests" Type="Self.Guests" Multiplicity="1" />
+          <End Role="History" Type="Self.History" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Guests">
+              <PropertyRef Name="guestID" />
+            </Principal>
+            <Dependent Role="History">
+              <PropertyRef Name="guestID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Residents__stude__16644E42">
+          <End Role="ZipCard" Type="Self.ZipCard" Multiplicity="1" />
+          <End Role="Residents" Type="Self.Residents" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="ZipCard">
+              <PropertyRef Name="zipID" />
+            </Principal>
+            <Dependent Role="Residents">
+              <PropertyRef Name="studentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_History_Residents">
+          <End Role="Residents" Type="Self.Residents" Multiplicity="1" />
+          <End Role="History" Type="Self.History" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Residents">
+              <PropertyRef Name="studentID" />
+            </Principal>
+            <Dependent Role="History">
+              <PropertyRef Name="hostID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="masterModelStoreContainer">
+          <EntitySet Name="Guests" EntityType="Self.Guests" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="History" EntityType="Self.History" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Residents" EntityType="Self.Residents" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ZipCard" EntityType="Self.ZipCard" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__History__guestID__1940BAED" Association="Self.FK__History__guestID__1940BAED">
+            <End Role="Guests" EntitySet="Guests" />
+            <End Role="History" EntitySet="History" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Residents__stude__16644E42" Association="Self.FK__Residents__stude__16644E42">
+            <End Role="ZipCard" EntitySet="ZipCard" />
+            <End Role="Residents" EntitySet="Residents" />
+          </AssociationSet>
+          <AssociationSet Name="FK_History_Residents" Association="Self.FK_History_Residents">
+            <End Role="Residents" EntitySet="Residents" />
+            <End Role="History" EntitySet="History" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="masterModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Guest">
+          <Key>
+            <PropertyRef Name="guestID" />
+          </Key>
+          <Property Name="guestID" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="prohibited" Type="Boolean" Nullable="false" />
+          <Property Name="prohibitedDate" Type="DateTime" Precision="3" />
+          <Property Name="notes" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="identityType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="isStudent" Type="Boolean" Nullable="false" />
+          <Property Name="firstName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="lastName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="gender" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Histories" Relationship="Self.FK__History__guestID__1940BAED" FromRole="Guests" ToRole="History" />
+        </EntityType>
+        <EntityType Name="History">
+          <Key>
+            <PropertyRef Name="transactionID" />
+          </Key>
+          <Property Name="transactionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="guestID" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="hostID" Type="Int32" Nullable="false" />
+          <Property Name="building" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="bedspace" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="updatedBy" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="overnight" Type="Boolean" Nullable="false" />
+          <Property Name="inTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="outTime" Type="DateTime" Precision="3" />
+          <Property Name="expired" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Guest" Relationship="Self.FK__History__guestID__1940BAED" FromRole="History" ToRole="Guests" />
+          <NavigationProperty Name="Resident" Relationship="Self.FK_History_Residents" FromRole="History" ToRole="Residents" />
+        </EntityType>
+        <EntityType Name="Resident">
+          <Key>
+            <PropertyRef Name="studentID" />
+          </Key>
+          <Property Name="studentID" Type="Int32" Nullable="false" />
+          <Property Name="firstName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="lastName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="building" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="room" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="moveInDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="moveOutDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Histories" Relationship="Self.FK_History_Residents" FromRole="Residents" ToRole="History" />
+          <NavigationProperty Name="ZipCard" Relationship="Self.FK__Residents__stude__16644E42" FromRole="Residents" ToRole="ZipCard" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="userID" />
+          </Key>
+          <Property Name="userID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="associatedBuilding" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="username" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="pword" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="isAdmin" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ZipCard">
+          <Key>
+            <PropertyRef Name="zipID" />
+          </Key>
+          <Property Name="zipID" Type="Int32" Nullable="false" />
+          <Property Name="uaNetID" Type="String" MaxLength="7" FixedLength="false" Unicode="false" />
+          <Property Name="firstName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="lastName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="gender" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Resident" Relationship="Self.FK__Residents__stude__16644E42" FromRole="ZipCard" ToRole="Residents" />
+        </EntityType>
+        <Association Name="FK__History__guestID__1940BAED">
+          <End Role="Guests" Type="Self.Guest" Multiplicity="1" />
+          <End Role="History" Type="Self.History" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Guests">
+              <PropertyRef Name="guestID" />
+            </Principal>
+            <Dependent Role="History">
+              <PropertyRef Name="guestID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_History_Residents">
+          <End Role="Residents" Type="Self.Resident" Multiplicity="1" />
+          <End Role="History" Type="Self.History" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Residents">
+              <PropertyRef Name="studentID" />
+            </Principal>
+            <Dependent Role="History">
+              <PropertyRef Name="hostID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Residents__stude__16644E42">
+          <End Role="ZipCard" Type="Self.ZipCard" Multiplicity="1" />
+          <End Role="Residents" Type="Self.Resident" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="ZipCard">
+              <PropertyRef Name="zipID" />
+            </Principal>
+            <Dependent Role="Residents">
+              <PropertyRef Name="studentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="masterEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Guests" EntityType="Self.Guest" />
+          <EntitySet Name="Histories" EntityType="Self.History" />
+          <EntitySet Name="Residents" EntityType="Self.Resident" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <EntitySet Name="ZipCards" EntityType="Self.ZipCard" />
+          <AssociationSet Name="FK__History__guestID__1940BAED" Association="Self.FK__History__guestID__1940BAED">
+            <End Role="Guests" EntitySet="Guests" />
+            <End Role="History" EntitySet="Histories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_History_Residents" Association="Self.FK_History_Residents">
+            <End Role="Residents" EntitySet="Residents" />
+            <End Role="History" EntitySet="Histories" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Residents__stude__16644E42" Association="Self.FK__Residents__stude__16644E42">
+            <End Role="ZipCard" EntitySet="ZipCards" />
+            <End Role="Residents" EntitySet="Residents" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="masterModelStoreContainer" CdmEntityContainer="masterEntities">
+          <EntitySetMapping Name="Guests">
+            <EntityTypeMapping TypeName="masterModel.Guest">
+              <MappingFragment StoreEntitySet="Guests">
+                <ScalarProperty Name="guestID" ColumnName="guestID" />
+                <ScalarProperty Name="prohibited" ColumnName="prohibited" />
+                <ScalarProperty Name="prohibitedDate" ColumnName="prohibitedDate" />
+                <ScalarProperty Name="notes" ColumnName="notes" />
+                <ScalarProperty Name="identityType" ColumnName="identityType" />
+                <ScalarProperty Name="isStudent" ColumnName="isStudent" />
+                <ScalarProperty Name="firstName" ColumnName="firstName" />
+                <ScalarProperty Name="lastName" ColumnName="lastName" />
+                <ScalarProperty Name="gender" ColumnName="gender" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Histories">
+            <EntityTypeMapping TypeName="masterModel.History">
+              <MappingFragment StoreEntitySet="History">
+                <ScalarProperty Name="transactionID" ColumnName="transactionID" />
+                <ScalarProperty Name="guestID" ColumnName="guestID" />
+                <ScalarProperty Name="hostID" ColumnName="hostID" />
+                <ScalarProperty Name="building" ColumnName="building" />
+                <ScalarProperty Name="bedspace" ColumnName="bedspace" />
+                <ScalarProperty Name="updatedBy" ColumnName="updatedBy" />
+                <ScalarProperty Name="overnight" ColumnName="overnight" />
+                <ScalarProperty Name="inTime" ColumnName="inTime" />
+                <ScalarProperty Name="outTime" ColumnName="outTime" />
+                <ScalarProperty Name="expired" ColumnName="expired" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Residents">
+            <EntityTypeMapping TypeName="masterModel.Resident">
+              <MappingFragment StoreEntitySet="Residents">
+                <ScalarProperty Name="studentID" ColumnName="studentID" />
+                <ScalarProperty Name="firstName" ColumnName="firstName" />
+                <ScalarProperty Name="lastName" ColumnName="lastName" />
+                <ScalarProperty Name="building" ColumnName="building" />
+                <ScalarProperty Name="room" ColumnName="room" />
+                <ScalarProperty Name="moveInDate" ColumnName="moveInDate" />
+                <ScalarProperty Name="moveOutDate" ColumnName="moveOutDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="masterModel.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="userID" ColumnName="userID" />
+                <ScalarProperty Name="associatedBuilding" ColumnName="associatedBuilding" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="pword" ColumnName="pword" />
+                <ScalarProperty Name="isAdmin" ColumnName="isAdmin" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ZipCards">
+            <EntityTypeMapping TypeName="masterModel.ZipCard">
+              <MappingFragment StoreEntitySet="ZipCard">
+                <ScalarProperty Name="zipID" ColumnName="zipID" />
+                <ScalarProperty Name="uaNetID" ColumnName="uaNetID" />
+                <ScalarProperty Name="firstName" ColumnName="firstName" />
+                <ScalarProperty Name="lastName" ColumnName="lastName" />
+                <ScalarProperty Name="gender" ColumnName="gender" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

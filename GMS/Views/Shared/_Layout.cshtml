@@ -1,0 +1,109 @@
+﻿<!-- Page Layout -->
+
+@{ 
+    if (Session["username"] == null) { Response.Redirect("~/Home/login"); }
+}
+
+<!DOCTYPE html>
+
+<style type="text/css">
+    .forms {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .field-validation-error {
+        color: red;
+    }
+
+    input[type="radio"] {
+        margin: 0 25px 0 5px;
+        width:24px;
+        height:24px;
+        position:relative;
+        top:6px
+    }
+
+    input[type="checkbox"] {
+        margin: 0 25px 0 5px;
+        width:24px;
+        height:24px;
+        position:relative;
+        top:6px;
+    }
+</style>
+
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Cabin:400" rel="stylesheet">
+    <link href="/Content/w3.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="../favicon.ico" type="image/ico" />
+</head>
+
+
+<body>
+    <!-- Header Layout -->
+    <!-- Navigation Links -->
+    <div class="w3-top">
+        <div class="w3-row w3-padding w3-black">
+            <div class="w3-col s2">
+                <a href="~/home/admin" class="w3-button w3-block w3-black">ADMIN</a>
+            </div>
+            <div class="w3-col s2">
+                <a href="~/home/currentGuests" class="w3-button w3-block w3-black">CURRENT GUESTS</a>
+            </div>
+            <div class="w3-col s2">
+                <a href="https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fuazips-my.sharepoint.com%2F%3Ax%3A%2Fg%2Fpersonal%2Fhousingga5_uakron_edu1%2FETzwsSHTX31KlwEGKQFiuv4B79KOhEAsWcJZw4r-4WEgVg%3Fe%3DMWR8yU&data=02%7C01%7C%7C3eb9dfccfd8e4ae9048708d6771dda66%7Ce8575dedd7f94ecea4aa0b32991aeedd%7C1%7C0%7C636827367427353997&sdata=b2O6SOu3uWHsGzDnvkLWG49NO%2FhAwtwWe4ZzGCWbiHs%3D&reserved=0" class="w3-button w3-block w3-black" target="_blank">DESK SCHEDULE</a>
+            </div>
+            <div class="w3-col s2">
+                <a href="https://my.uakron.edu/psp/portprod_newwin/EMPLOYEE/EMPL/e/?url=https%3a%2f%2fuakron.workforcehosting.com%2fworkforce%2fSSO.do" class="w3-button w3-block w3-black" target="_blank">EMPCENTER</a>
+            </div>
+            <div class="w3-col s2">
+                <a href="https://publicdocs.maxient.com/incidentreport.php?UnivofAkron" class="w3-button w3-block w3-black" target="_blank">SUBMIT IR</a>
+            </div>
+            <div class="w3-col s2">
+                <a href="https://my.uakron.edu" class="w3-button w3-block w3-black" target="_blank">MY AKRON</a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- GMS Logo Header -->
+    <header class="w3-container w3-theme w3-padding w3-black" id="myHeader">
+        <i onclick="w3_open()" class="fa fa-bars w3-large w3-button w3-theme"></i>
+        <div class="w3-center">
+            <h1 class="w3-xxxlarge w3-text-white"><i>@Html.ActionLink("Guest Management System", "gmsHome")</i></h1>
+        </div>
+    </header>
+
+
+    <div id="main">
+        @RenderBody()
+    </div>
+
+    <!-- Footer & Sign Out -->
+    <div id="footer">
+        <footer class="w3-container w3-theme w3-black w3-padding-small">
+            <div class="w3-center">
+                <h5><a href="@Url.Action("logout", "Home")">SIGN OUT</a></h5>
+                <p>Created by Ethan Clark (2019)</p>
+            </div>
+        </footer>
+    </div>
+
+</body>
+
+</html>
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>

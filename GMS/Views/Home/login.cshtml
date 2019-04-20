@@ -1,0 +1,98 @@
+﻿@model GMS.Models.Account
+
+@{
+    Layout = null;
+    ViewBag.Title = "UserLogin";
+}
+
+<!DOCTYPE html>
+
+<title>GMS - Login</title>
+
+<!-- GMS Logo Header -->
+<header class="w3-container w3-theme w3-padding w3-black" id="myHeader">
+    <i onclick="w3_open()" class="fa fa-bars w3-large w3-button w3-theme"></i>
+    <div class="w3-center">
+        <h1 class="w3-xxxlarge w3-animate-top w3-text-white"><i>Guest Management System</i></h1>
+    </div>
+</header>
+
+<style type="text/css">
+    .field-validation-error {
+        color: red;
+    }
+
+    .forms {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    input[type=submit] {
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    input[type=submit]:hover {
+        background-color: #45a049;
+    }
+</style>
+
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Cabin:400" rel="stylesheet">
+    <link href="/Content/w3.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="../favicon.ico" type="image/ico" />
+</head>
+
+
+<body>
+    @using (Html.BeginForm("authenticate", "Home", FormMethod.Post)) {
+    <!-- Login form content -->
+        <div class="w3-container" id="menu">
+            <div class="w3-content w3-center w3-padding-64" style="max-width:400px">
+                <h2>Please login below:</h2>
+                <div class="w3-content w3-center w3-padding-48" style="max-width:400px">
+                    @Html.EditorFor(model => model.username, new { htmlAttributes = new { @class = "forms", placeholder = "Username" } })
+                    <p>@Html.ValidationMessageFor(model => model.username)</p>
+                    @Html.EditorFor(model => model.password, new { htmlAttributes = new { @class = "forms", placeholder = "Password" } })
+                    <p>@Html.ValidationMessageFor(model => model.password)</p>
+                    <input type="submit" value="Log In" />
+                    <p><br /><label class="field-validation-error">@Html.DisplayFor(model => model.errorMessage)</label></p>
+                </div>
+            </div>
+        </div>
+    }
+</body>
+
+</html>
+
+<!-- Extra padding before footer, for style -->
+<div class="w3-padding-8"></div>
+
+<!-- Footer & Sign Out -->
+<div id="footer">
+    <footer class="w3-container w3-theme w3-black w3-padding-small">
+        <div class="w3-center">
+            <p>Created by Ethan Clark (2019)</p>
+        </div>
+    </footer>
+</div>
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>

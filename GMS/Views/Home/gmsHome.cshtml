@@ -1,0 +1,224 @@
+﻿@using GMS.Models;
+
+@model History
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Home";
+    string myBuilding = (string)Session["username"];
+    string residentName = (string)Session["host"];
+    string successMessage = "";
+
+    //Set success message for check out based on cookie value
+    if (Session["guestIsFound"] != null) {
+        if (Session["guestIsFound"].ToString() == "Guest successfully checked out!") {
+            successMessage = Session["guestIsFound"].ToString();
+        }
+    }
+    else { successMessage = ""; }
+
+    //Set focus on checkout text box if user has just checked a guest out
+    if (Session["tabStatus"] != null) {
+        if (Session["tabStatus"].ToString() == "tabOut") {
+            <script>
+                window.onload = function() {
+                document.getElementById("outStatus").focus(); };
+            </script>
+        }
+    }
+}
+
+@Html.Raw(TempData["msg"])
+
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
+<!DOCTYPE HTML>
+
+<title>GMS - @myBuilding.ToUpper()</title>
+
+<!-- Tabs Menu Interface -->
+<div class="w3-container" id="menu">
+    <div class="w3-content" style="max-width:700px">
+
+        <h4 class="w3-center w3-padding-32"></h4>
+
+            <div class="w3-row w3-center w3-card w3-padding">
+                <a href="javascript:void(0)" onclick="switchTabs(event, 'In');" id="tabIn">
+                    <div class="w3-col s6 tablink">Check In</div>
+                </a>
+                <a href="javascript:void(0)" onclick="switchTabs(event, 'Out');" id="tabOut">
+                    <div class="w3-col s6 tablink">Check Out</div>
+                </a>
+            </div>
+
+
+            <!-- Guest Check In Tab -->
+            <div id="In" class="w3-container menu w3-padding-32 w3-card">
+                @using (Html.BeginForm("grabResident", "Home", FormMethod.Post)) {
+                    //Form to grab resident data from database
+                    <h5>Enter Resident's Zip Card below:</h5>
+                    @Html.EditorFor(x => x.Resident.studentID, new { htmlAttributes = new { @class = "forms", placeholder = "Zip ID #" } })
+                    <p>@Html.ValidationMessageFor(x => x.Resident.studentID)</p>
+                    <button class="w3-button w3-block w3-dark-grey w3-center" type="submit">Confirm Resident</button>
+                }
+
+
+                @if ((int)Session["guestCount"] != 3 && Session["host"] != null) {
+                    //Form to grab guest data from database
+                    using (Html.BeginForm("grabGuest", "Home", FormMethod.Post)) {
+                        <br />
+                        <h5>Let's sign in a guest for @{@residentName}</h5>
+                        <h5>Enter their guest's ID number below:</h5>
+                        @Html.EditorFor(x => x.Guest.guestID, new { htmlAttributes = new { @class = "forms", placeholder = "ID #", Value = "" } })
+                        <p>@Html.ValidationMessageFor(x => x.Guest.guestID)</p>
+
+                        //Carry over relevant data to the next controller call
+                        @Html.HiddenFor(x => x.Resident.studentID)
+                        @Html.HiddenFor(x => x.Resident.firstName)
+                        @Html.HiddenFor(x => x.Resident.lastName)
+                        @Html.HiddenFor(x => x.Resident.building)
+                        @Html.HiddenFor(x => x.Resident.moveInDate)
+                        @Html.HiddenFor(x => x.Resident.room)
+                        @Html.HiddenFor(x => x.building)
+                        @Html.HiddenFor(x => x.bedspace)
+                        @Html.HiddenFor(x => x.hostID)
+
+                        <button class="w3-button w3-block w3-dark-grey w3-center" type="submit">Find Guest</button>
+        }
+    }
+
+
+                @if ((int)Session["guestCount"] != 3 && Session["guestIsFound"] != null) {
+                    if (Session["guestIsFound"].ToString() != "Guest successfully checked out!") {
+                        //Form to check in a resident's new guest
+                        using (Html.BeginForm("newGuest", "Home", FormMethod.Post)) {
+                            //If the guest is not registered, insert additional fields to be filled out
+                            if (Session["guestIsFound"].ToString() == "false") {
+                            <br />
+                            //Dropdown menu selection for selecting the guest's ID type
+                            <h5>Guest has not been registered yet - let's fix that:<div style="text-align:right">@Html.DropDownListFor(x => x.Guest.identityType, new List<SelectListItem> { new SelectListItem { Value = "Driver's License", Text = "Driver's License" }, new SelectListItem { Value = "Passport", Text = "Passport" }, new SelectListItem { Value = "Military ID", Text = "Military ID" }, new SelectListItem { Value = "Other", Text = "Other" } })</div></h5>
+                            @Html.EditorFor(x => x.Guest.guestID, new { htmlAttributes = new { @class = "forms", placeholder = "Register New ID #" } })
+                            <p>@Html.ValidationMessageFor(x => x.Guest.guestID)</p>
+                            <br />
+                            <br />
+                            }
+
+                        //First Name textbox (required - please validate, use login as example)
+                        @Html.EditorFor(x => x.Guest.firstName, new { htmlAttributes = new { @class = "forms", placeholder = "First Name", Value = Model.Guest.firstName.ToString() } })
+                        <p>@Html.ValidationMessageFor(x => x.Guest.firstName)</p>
+
+                        //Last Name textbox (required)
+                        @Html.EditorFor(x => x.Guest.lastName, new { htmlAttributes = new { @class = "forms", placeholder = "Last Name", Value = Model.Guest.lastName.ToString() } })
+                        <p>@Html.ValidationMessageFor(x => x.Guest.lastName)</p>
+
+                        //Set buttons to checked, if values are true
+                        var studentCase = Model.Guest.isStudent ? new { @checked = true } : null;
+                        var maleCase = Model.Guest.gender ? new { @checked = "checked" } : null;
+                        var femaleCase = Model.Guest.gender ? null : new { @checked = "checked" };
+
+                        //UA Student checkbox, male / female radio buttons, overnight checkbox
+                        <br />
+                        <div class="w3-row w3-center">
+                            <div class="w3-col s3"><h6>UA Student?
+                            @Html.CheckBoxFor(x => x.Guest.isStudent, new { value = Model.Guest.isStudent })</h6></div>
+
+                            <div class="w3-col s3"><h6>Male
+                            @Html.RadioButtonFor(x => x.Guest.gender, true, maleCase)</h6></div>
+
+                            <div class="w3-col s3"><h6>Female
+                            @Html.RadioButtonFor(x => x.Guest.gender, false, femaleCase)</h6></div>
+
+                            <div class="w3-col s3"><h6>Overnight?
+                            @Html.CheckBoxFor(x => x.overnight, new { value = false })</h6></div>
+                        </div>
+                        <br />
+
+                        //Carry over relevant data to the next controller call
+                        @Html.HiddenFor(x => x.Guest.identityType)
+                        @Html.HiddenFor(x => x.Guest.prohibited)
+                        @Html.HiddenFor(x => x.Resident.studentID)
+                        @Html.HiddenFor(x => x.Resident.firstName)
+                        @Html.HiddenFor(x => x.Resident.lastName)
+                        @Html.HiddenFor(x => x.Resident.building)
+                        @Html.HiddenFor(x => x.Resident.room)
+                        @Html.HiddenFor(x => x.Resident.moveInDate)
+                        @Html.HiddenFor(x => x.building)
+                        @Html.HiddenFor(x => x.bedspace)
+                        @Html.HiddenFor(x => x.hostID)
+                        @Html.HiddenFor(x => x.guestID)
+
+                        //Submit, and subsequently check in guest
+                        <button class="w3-button w3-block w3-dark-grey w3-center" type="submit">Check In Guest</button>
+                        }
+                    }
+                }
+
+
+                @if ((int)Session["guestCount"] == 3) {
+                    List<History> details = new List<History>();
+                    details = (List<History>)Model.grabActives();
+                    <br />
+                    <h5>This resident already has three active guests...</h5>
+                    <h5>Consider checking somebody out?</h5>
+                    <!-- Display the resident's three active guests here with a sign out checkbox and submit button for them -->
+                    using (Html.BeginForm("checkOutSet", "Home", FormMethod.Post)) {
+                        @Html.HiddenFor(x => x.hostID)
+                        @Html.HiddenFor(x => x.Resident.studentID)
+                        @Html.HiddenFor(x => x.Resident.firstName)
+                        @Html.HiddenFor(x => x.Resident.lastName)
+                        @Html.HiddenFor(x => x.Resident.building)
+                        @Html.HiddenFor(x => x.Resident.room)
+                        @Html.HiddenFor(x => x.Resident.moveInDate)
+                        @Html.HiddenFor(x => x.building)
+                        @Html.HiddenFor(x => x.bedspace)
+
+                        foreach (var row in details) {
+                            <h5>
+                                <ul>
+                                    <li><input type="checkbox" name="set" value="@row.guestID">@row.Guest.firstName @row.Guest.lastName</li>
+                                </ul>
+                            </h5>
+                        }
+
+                        <button class="w3-button w3-block w3-dark-grey w3-center" type="submit">Check Out</button>
+                    }
+                }
+
+            </div>
+
+
+            <!-- Guest Check Out Tab -->
+            <div id="Out" class="w3-container menu w3-padding-32 w3-card">
+                <h5>Scan or enter Guest's ID below:</h5>
+                @using (Html.BeginForm("checkOut", "Home", FormMethod.Post)) {
+                    <div style="color:limegreen"><h6>@successMessage</h6></div>
+                    @Html.EditorFor(x => x.guestID, new { htmlAttributes = new { @class = "forms", placeholder = "ID #", Value = "", id = "outStatus" } })
+                    <p>@Html.ValidationMessageFor(x => x.guestID)</p>
+                    <button class="w3-button w3-block w3-dark-grey w3-center" type="submit">Check Out</button>
+                }
+            </div>
+    </div>
+</div>
+
+
+<!-- Extra padding before footer, for style -->
+<div class="w3-padding-48"></div>
+
+<!-- Tab Menu Functionality - Source: w3 school templates -->
+<script>
+function switchTabs(action, name) {
+    var i, x, tablinks;
+  x = document.getElementsByClassName("menu");
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < x.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" w3-dark-grey", "");
+  }
+  document.getElementById(name).style.display = "block";
+  action.currentTarget.firstElementChild.className += " w3-dark-grey";
+}
+var status = '@Session["tabStatus"].ToString()';
+document.getElementById(status).click();
+</script>

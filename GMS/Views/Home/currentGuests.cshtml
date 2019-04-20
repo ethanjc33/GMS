@@ -1,0 +1,69 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string myLocation = (string)Session["username"];
+}
+
+@model IEnumerable<GMS.Models.History>
+
+<!-- Displays the currently registered guests based on user's associated building -->
+
+<!DOCTYPE HTML>
+
+<title>GMS - Active Guests</title>
+
+<!-- Table display for database results -->
+<div class="w3-container">
+    <hr>
+    <div class="w3-center">
+        <h3>CURRENTLY ACTIVE GUESTS FOR @myLocation.ToUpper()</h3>
+        <br />
+    </div>
+    <div class="w3-responsive w3-card-4">
+        <table class="w3-table w3-striped w3-bordered">
+            <thead>
+                <tr class="w3-theme">
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Sex</th>
+                    <th>Guest ID #</th>
+                    <th>Checked In At</th>
+                    <th>Host Bedspace</th>
+                    <th>Host</th>
+                    <th>Check Out</th>
+                </tr>
+            </thead>
+
+            <!-- Returns each row from the user's building's active guest list -->
+            @if (Model != null) {
+                <tbody>
+                    @foreach (var row in Model) {
+                    //Intrepret "true" value as Male and "false" value as female
+                    string sex = "";
+                    if (row.Guest.gender == true) { sex = "Male"; }
+                    else { sex = "Female"; }
+                    <tr>
+                        <td>@row.Guest.firstName</td>
+                        <td>@row.Guest.lastName</td>
+                        <td>@sex</td>
+                        <td>@row.guestID</td>
+                        <td>@row.inTime</td>
+                        <td>@row.bedspace</td>
+                        <td>@row.Resident.firstName @row.Resident.lastName</td>
+                        <td>@Html.ActionLink("Check Out", "quickCheckOut", new { gid = row.guestID }, null)</td>
+                    </tr>
+                    }
+                </tbody>
+            }
+        </table>
+    </div>
+</div>
+
+
+    <!-- Set current time, in Eastern Standard Time -->
+    @{ var currentTime = DateTime.Now; }
+
+
+    <!-- Extra padding and last updated timestamp -->
+    <div class="w3-padding-64"></div>
+    <div class="w3-center"><h4>Last updated at @currentTime</h4></div>
+    <div class="w3-padding-64"></div>
